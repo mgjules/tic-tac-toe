@@ -12,9 +12,11 @@ import (
 	"go.uber.org/zap"
 )
 
+const appName = "tictactoe"
+
 func main() {
 	if err := run(); err != nil {
-		fmt.Printf("[tictactoe] %v", err)
+		fmt.Printf("[%s] %v", appName, err)
 		os.Exit(1)
 	}
 }
@@ -38,7 +40,7 @@ func run() error {
 	}
 	defer func() {
 		if err = logger.Sync(); err != nil {
-			fmt.Printf("[tictactoe] listen: %v", err)
+			fmt.Printf("[%s] logger: %v", appName, err)
 			os.Exit(1)
 		}
 	}()
@@ -58,7 +60,7 @@ func run() error {
 
 	go func() {
 		if err := server.Start(cfg.Host, cfg.Port); err != nil && err != http.ErrServerClosed {
-			fmt.Printf("[tictactoe] listen: %v", err)
+			fmt.Printf("[%s] listen: %v", appName, err)
 			os.Exit(1)
 		}
 	}()
