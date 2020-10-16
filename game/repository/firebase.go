@@ -16,17 +16,19 @@ type Firebase struct {
 
 // NewFirebase returns a new Firebase repository
 func NewFirebase(url, serviceAccountKeyPath string) (*Firebase, error) {
+	ctx := context.Background()
+
 	conf := &firebase.Config{
 		DatabaseURL: url,
 	}
 	opt := option.WithCredentialsFile(serviceAccountKeyPath)
 
-	app, err := firebase.NewApp(context.Background(), conf, opt)
+	app, err := firebase.NewApp(ctx, conf, opt)
 	if err != nil {
 		return nil, err
 	}
 
-	client, err := app.Database(context.Background())
+	client, err := app.Database(ctx)
 	if err != nil {
 		return nil, err
 	}
