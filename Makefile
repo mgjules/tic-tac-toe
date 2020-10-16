@@ -1,12 +1,16 @@
+APP_NAME = tictactoe
+
 .PHONY: build
 
 buildrun: lint build run
 
 lint:
-	@golangci-lint run
+	golangci-lint run
 
 run:
-	@./ringier-test
+	./$(APP_NAME)
 
 build:
-	@go build -ldflags="-s -w"
+	CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w"
+
+default: build
