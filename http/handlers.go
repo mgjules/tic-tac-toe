@@ -14,6 +14,13 @@ func (s *Server) HandleHealthCheck() gin.HandlerFunc {
 	}
 }
 
+// HandleMove handles the move route
+func (s *Server) HandleMove() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// TODO: code
+	}
+}
+
 // HandleNotFound handles the not found route
 func (s *Server) HandleNotFound() gin.HandlerFunc {
 	return func(c *gin.Context) {
