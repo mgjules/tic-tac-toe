@@ -24,29 +24,25 @@ func (s *Server) HandleMove(gameRepository game.Repository) gin.HandlerFunc {
 		Position uint8  `json:"position" binding:"numeric,min=0,max=8"`
 	}
 	return func(c *gin.Context) {
-		var json Request
-		if err := c.ShouldBindJSON(&json); err != nil {
+		var req Request
+		if err := c.ShouldBindJSON(&req); err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		state := ttt.State(json.Mark)
+		state := ttt.State(req.Mark)
 
 		// load board from saved game state or create new one if not exist
-		g, err := gameRepository.LoadGame(c, json.GameID)
+		g, err := gameRepository.LoadGame(c, req.GameID)
 		if err != nil && err != game.ErrGameNotFound {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		} else if err == game.ErrGameNotFound {
 			// no game found
 			g = &game.Game{
-				ID:         json.GameID,
-				LastMoveBy: state,
+				ID:         req.GameID,
 				BoardCells: [9]ttt.State{},
 			}
-		} else if err == nil && g.LastMoveBy == state {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "please wait your turn", "state": g})
-			return
 		}
 
 		board := &ttt.Board{Cells: g.BoardCells}
@@ -58,20 +54,28 @@ func (s *Server) HandleMove(gameRepository game.Repository) gin.HandlerFunc {
 			return
 		}
 
+		// is same player again?
+		if g.LastMoveBy == state {
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "please wait your turn", "state": g})
+			return
+		}
+
 		// apply the move on the board
-		move := ttt.Move(json.Position)
+		move := ttt.Move(req.Position)
 		if err := board.Apply(move, state); err != nil {
 			// forbidden move
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": err.Error(), "state": g})
 			return
 		}
 
-		// save game state
+		// save game state if not from cloud function
 		g.LastMoveBy = state
 		g.BoardCells = board.Cells
-		if err := gameRepository.SaveGame(c, *g); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
+		if c.Request.UserAgent() != "TicTacToe/1.0" {
+			if err := gameRepository.SaveGame(c, *g); err != nil {
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
 		}
 
 		// has the game ended now?
