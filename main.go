@@ -1,0 +1,55 @@
+package main
+
+import (
+	"fmt"
+	"net/http"
+	"os"
+
+	"github.com/mgjules/tic-tac-toe/config"
+	rhttp "github.com/mgjules/tic-tac-toe/http"
+	"github.com/pkg/errors"
+	"go.uber.org/zap"
+)
+
+func main() {
+	if err := run(); err != nil {
+		fmt.Printf("[tictactoe] %v", err)
+		os.Exit(1)
+	}
+}
+
+func run() error {
+	// Config
+	cfg, err := config.Load()
+	if err != nil {
+		return errors.Wrap(err, "can't load config")
+	}
+
+	// Logger
+	var logger *zap.Logger
+	if cfg.Prod {
+		logger, err = zap.NewProduction()
+	} else {
+		logger, err = zap.NewDevelopment()
+	}
+	if err != nil {
+		return errors.Wrap(err, "can't create logger")
+	}
+	defer logger.Sync()
+
+	// Server
+	server := rhttp.NewServer(cfg.Prod)
+	server.Middlewares(logger, cfg.CorsAllowedOrigins)
+	server.Routes()
+
+	logger.Info("Gin server started on ", zap.String("host", cfg.Host), zap.String("port", cfg.Port))
+
+	go func() {
+		if err := server.Start(cfg.Host, cfg.Port); err != nil && err != http.ErrServerClosed {
+			fmt.Printf("[tictactoe] listen: %v", err)
+			os.Exit(1)
+		}
+	}()
+
+	return server.WatchAndStop()
+}
