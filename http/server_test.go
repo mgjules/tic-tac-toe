@@ -46,7 +46,7 @@ func (suite *ServerTestSuite) TestRoutes() {
 }
 
 // TestHandleHealthCheck is a unit test
-// to test the health-check route
+// to test the health-check handler
 func (suite *ServerTestSuite) TestHandleHealthCheck() {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
