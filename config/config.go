@@ -4,10 +4,12 @@ import "github.com/spf13/viper"
 
 // Config holds app-wide config
 type Config struct {
-	Prod               bool
-	Host               string
-	Port               string
-	CorsAllowedOrigins []string `mapstructure:"cors_allowed_origins"`
+	Prod                          bool
+	Host                          string
+	Port                          string
+	CorsAllowedOrigins            []string `mapstructure:"cors_allowed_origins"`
+	FirebaseDBURL                 string   `mapstructure:"firebase_db_url"`
+	FirebaseServiceAccountKeyPath string   `mapstructure:"firebase_service_account_key_path"`
 }
 
 // Load loads and creates the config object

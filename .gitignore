@@ -24,5 +24,8 @@ tmp
 # App example env
 *.env
 
+# Firebase service account key
+serviceAccountKey.json
+
 # Dependency directories (remove the comment below to include it)
 # vendor/

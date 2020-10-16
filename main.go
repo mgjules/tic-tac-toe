@@ -7,6 +7,7 @@ import (
 
 	"github.com/mgjules/tic-tac-toe/config"
 	rhttp "github.com/mgjules/tic-tac-toe/http"
+	"github.com/mgjules/tic-tac-toe/repository"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
@@ -37,10 +38,16 @@ func run() error {
 	}
 	defer logger.Sync()
 
+	// Firebase repository
+	firebaseRepository, err := repository.NewFirebase(cfg.FirebaseDBURL, cfg.FirebaseServiceAccountKeyPath)
+	if err != nil {
+		return errors.Wrap(err, "can't create firebase repository")
+	}
+
 	// Server
 	server := rhttp.NewServer(cfg.Prod)
 	server.Middlewares(logger, cfg.CorsAllowedOrigins)
-	server.Routes()
+	server.Routes(firebaseRepository)
 
 	logger.Info("Gin server started on ", zap.String("host", cfg.Host), zap.String("port", cfg.Port))
 

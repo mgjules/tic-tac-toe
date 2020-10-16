@@ -1,12 +1,14 @@
 package http_test
 
 import (
+	"bytes"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	rhttp "github.com/JulesMike/ringier-test/http"
 	"github.com/gin-gonic/gin"
+	rhttp "github.com/mgjules/tic-tac-toe/http"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -60,7 +62,22 @@ func (suite *ServerTestSuite) TestHandleHealthCheck() {
 func (suite *ServerTestSuite) TestHandleMove() {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	suite.server.HandleHealthCheck()(c)
+
+	requestBody, err := json.Marshal(struct {
+		GameID   string `json:"game_id"`
+		Mark     uint8  `json:"mark"`
+		Position uint8  `json:"position"`
+	}{
+		GameID:   "ababa",
+		Mark:     1,
+		Position: 5,
+	})
+	if err != nil {
+		suite.Error(err)
+	}
+
+	c.Request, _ = http.NewRequest("POST", "/hola", bytes.NewBuffer(requestBody))
+	suite.server.HandleMove()(c)
 
 	suite.Equal(http.StatusOK, w.Code)
 }

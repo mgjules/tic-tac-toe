@@ -1,10 +1,20 @@
 package game
 
+import (
+	"context"
+	"errors"
+)
+
+// Repository errors
+var (
+	ErrGameNotFound = errors.New("game not found")
+)
+
 // Repository represents a game repository interface
 type Repository interface {
 	// LoadGame returns a game from a game id
-	LoadGame(id string) (Game, error)
+	LoadGame(ctx context.Context, id string) (*Game, error)
 
 	// SaveGame saves a game
-	SaveGame(state Game) error
+	SaveGame(ctx context.Context, g Game) error
 }
