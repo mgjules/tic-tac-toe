@@ -12,7 +12,7 @@ import (
 func (s *Server) Middlewares(logger *zap.Logger, corsAllowedOrigins []string) {
 	// create cors config
 	corsCfg := cors.DefaultConfig()
-	if corsAllowedOrigins != nil && len(corsAllowedOrigins) > 0 {
+	if len(corsAllowedOrigins) > 0 {
 		corsCfg.AllowOrigins = corsAllowedOrigins
 	} else {
 		corsCfg.AllowAllOrigins = true

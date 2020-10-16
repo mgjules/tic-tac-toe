@@ -15,7 +15,7 @@ type Game struct {
 
 // Validate validates the game
 func (g *Game) Validate() error {
-	if len(g.ID) == 0 {
+	if g.ID == "" {
 		return errors.New("invalid game")
 	}
 

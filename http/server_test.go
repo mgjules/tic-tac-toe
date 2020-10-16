@@ -20,16 +20,16 @@ type ServerTestSuite struct {
 	mockRepository game.Repository
 }
 
-func (suite *ServerTestSuite) SetupTest() {
-	suite.mockRepository = repository.NewMock()
+func (s *ServerTestSuite) SetupTest() {
+	s.mockRepository = repository.NewMock()
 
-	suite.server = rhttp.NewServer(false)
-	suite.server.Routes(suite.mockRepository)
+	s.server = rhttp.NewServer(false)
+	s.server.Routes(s.mockRepository)
 }
 
 // TestRoutes is an integration test
 // to test availability of the routes
-func (suite *ServerTestSuite) TestRoutes() {
+func (s *ServerTestSuite) TestRoutes() {
 	cases := []struct {
 		name   string
 		method string
@@ -42,29 +42,30 @@ func (suite *ServerTestSuite) TestRoutes() {
 	}
 
 	for _, tc := range cases {
-		suite.Run(tc.name, func() {
+		clonedTc := tc
+		s.Run(tc.name, func() {
 			w := httptest.NewRecorder()
-			req, _ := http.NewRequest(tc.method, tc.path, nil)
-			suite.server.Router.ServeHTTP(w, req)
+			req, _ := http.NewRequest(clonedTc.method, clonedTc.path, nil)
+			s.server.Router.ServeHTTP(w, req)
 
-			suite.Equal(tc.code, w.Code)
+			s.Equal(clonedTc.code, w.Code)
 		})
 	}
 }
 
 // TestHandleHealthCheck is a unit test
 // to test the health-check route
-func (suite *ServerTestSuite) TestHandleHealthCheck() {
+func (s *ServerTestSuite) TestHandleHealthCheck() {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	suite.server.HandleHealthCheck()(c)
+	s.server.HandleHealthCheck()(c)
 
-	suite.Equal(http.StatusOK, w.Code)
+	s.Equal(http.StatusOK, w.Code)
 }
 
 // TestHandleMove is a unit test
 // to test the move handler
-func (suite *ServerTestSuite) TestHandleMove() {
+func (s *ServerTestSuite) TestHandleMove() {
 	type Request struct {
 		GameID   string `json:"game_id"`
 		Mark     uint8  `json:"mark"`
@@ -93,24 +94,25 @@ func (suite *ServerTestSuite) TestHandleMove() {
 	}
 
 	for _, tc := range cases {
-		suite.Run(tc.name, func() {
+		clonedTc := tc
+		s.Run(tc.name, func() {
 			var err error
 			w := httptest.NewRecorder()
 			c, _ := gin.CreateTestContext(w)
 
-			requestBody, err := json.Marshal(tc.request)
+			requestBody, err := json.Marshal(clonedTc.request)
 			if err != nil {
-				suite.Error(err)
+				s.Error(err)
 			}
 
 			c.Request, err = http.NewRequest("POST", "/move", bytes.NewBuffer(requestBody))
 			if err != nil {
-				suite.Error(err)
+				s.Error(err)
 			}
 
-			suite.server.HandleMove(suite.mockRepository)(c)
+			s.server.HandleMove(s.mockRepository)(c)
 
-			suite.Equal(tc.code, w.Code)
+			s.Equal(clonedTc.code, w.Code)
 		})
 	}
 }

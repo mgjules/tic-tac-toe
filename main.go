@@ -36,7 +36,12 @@ func run() error {
 	if err != nil {
 		return errors.Wrap(err, "can't create logger")
 	}
-	defer logger.Sync()
+	defer func() {
+		if err = logger.Sync(); err != nil {
+			fmt.Printf("[tictactoe] listen: %v", err)
+			os.Exit(1)
+		}
+	}()
 
 	// Firebase repository
 	firebaseRepository, err := repository.NewFirebase(cfg.FirebaseDBURL, cfg.FirebaseServiceAccountKeyPath)
