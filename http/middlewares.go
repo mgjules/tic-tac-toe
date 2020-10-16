@@ -18,7 +18,7 @@ func (s *Server) Middlewares(logger *zap.Logger, corsAllowedOrigins []string) {
 		corsCfg.AllowAllOrigins = true
 	}
 
-	s.router.Use(cors.New(corsCfg))
-	s.router.Use(ginzap.Ginzap(logger, time.RFC3339, true))
-	s.router.Use(ginzap.RecoveryWithZap(logger, true))
+	s.Router.Use(cors.New(corsCfg))
+	s.Router.Use(ginzap.Ginzap(logger, time.RFC3339, true))
+	s.Router.Use(ginzap.RecoveryWithZap(logger, true))
 }

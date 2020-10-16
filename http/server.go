@@ -13,7 +13,7 @@ import (
 
 // Server represents a simple GIN HTTP server
 type Server struct {
-	router *gin.Engine
+	Router *gin.Engine
 
 	*http.Server
 }
@@ -25,7 +25,7 @@ func NewServer(isProd bool) *Server {
 	}
 
 	s := &Server{
-		router: gin.New(),
+		Router: gin.New(),
 	}
 
 	return s
@@ -35,7 +35,7 @@ func NewServer(isProd bool) *Server {
 func (s *Server) Start(host, port string) error {
 	s.Server = &http.Server{
 		Addr:           host + ":" + port,
-		Handler:        s.router,
+		Handler:        s.Router,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 5,

@@ -3,8 +3,8 @@ package http
 // Routes setups the http routes
 func (s *Server) Routes() {
 	// Health-check
-	s.router.GET("/", s.handleHealthCheck())
+	s.Router.GET("/", s.HandleHealthCheck())
 
 	// NotFound
-	s.router.NoRoute(s.handleNotFound())
+	s.Router.NoRoute(s.HandleNotFound())
 }
