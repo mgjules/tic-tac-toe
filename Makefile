@@ -17,6 +17,6 @@ run:
 	./$(APP_NAME)
 
 build: vet lint test
-	CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w"
+	CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o $(APP_NAME)
 
 default: build
