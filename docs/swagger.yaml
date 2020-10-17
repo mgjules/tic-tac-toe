@@ -1,0 +1,113 @@
+basePath: /
+definitions:
+  game.Game:
+    properties:
+      board_cells:
+        example:
+        - 0
+        - 1
+        - 0
+        - 2
+        - 2
+        - 0
+        - 1
+        - 1
+        - 0
+        items:
+          type: integer
+        type: array
+      id:
+        example: "123123"
+        type: string
+      last_move_by:
+        enum:
+        - 1
+        - 2
+        example: 1
+        type: integer
+    type: object
+  http.HealthCheckResponse:
+    properties:
+      pong:
+        example: "2020-10-17T11:34:10.089762941+04:00"
+        type: string
+    type: object
+  http.MoveRequest:
+    properties:
+      game_id:
+        example: "123123"
+        type: string
+      mark:
+        description: mark 'X' = 1. mark 'O' = 2.
+        enum:
+        - 1
+        - 2
+        example: 1
+        type: integer
+      position:
+        example: 5
+        maximum: 8
+        minimum: 0
+        type: integer
+    required:
+    - game_id
+    type: object
+  http.MoveResponse:
+    properties:
+      error:
+        type: string
+      result:
+        type: string
+      state:
+        $ref: '#/definitions/game.Game'
+    type: object
+host: localhost:3001
+info:
+  contact:
+    email: julesmichaelgiovanni@gmail.com
+    name: Jules Michael
+  description: Microservice for TicTacToe
+  termsOfService: http://swagger.io/terms/
+  title: TicTacToe
+  version: "1.0"
+paths:
+  /:
+    get:
+      description: get a "pong" with current time
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: pong
+          schema:
+            $ref: '#/definitions/http.HealthCheckResponse'
+      summary: Health checks the service
+  /move:
+    post:
+      consumes:
+      - application/json
+      description: Moves a mark('x', 'o') on the tictactoe board
+      parameters:
+      - description: represents a move request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.MoveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: move successful / X won / O won / tie
+          schema:
+            $ref: '#/definitions/http.MoveResponse'
+        "400":
+          description: validation failed on request
+          schema:
+            $ref: '#/definitions/http.MoveResponse'
+        "403":
+          description: please wait your turn / forbidden move
+          schema:
+            $ref: '#/definitions/http.MoveResponse'
+      summary: Makes a move
+swagger: "2.0"

@@ -3,8 +3,10 @@ package http_test
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +15,8 @@ import (
 	rhttp "github.com/mgjules/tic-tac-toe/http"
 	"github.com/stretchr/testify/suite"
 )
+
+const fixturesDir = "./fixtures/"
 
 type ServerTestSuite struct {
 	suite.Suite
@@ -24,7 +28,7 @@ func (s *ServerTestSuite) SetupTest() {
 	s.mockRepository = repository.NewMock()
 
 	s.server = rhttp.NewServer(false)
-	s.server.Routes(s.mockRepository)
+	s.server.Routes(s.mockRepository, "", "")
 }
 
 // TestRoutes is an integration test
@@ -72,47 +76,62 @@ func (s *ServerTestSuite) TestHandleMove() {
 		Position uint8  `json:"position"`
 	}
 
-	const gameID = "123123"
-	const X = 1
-	const O = 2
-
 	cases := []struct {
-		name    string
-		request Request
-		code    int
+		name        string
+		gameID      string
+		requestFile string
+		textToCheck string
 	}{
-		{"correct move by X", Request{gameID, X, 1}, http.StatusOK},
-		{"forbidden move by O", Request{gameID, O, 1}, http.StatusForbidden},
-		{"out-of-bound move by O", Request{gameID, O, 9}, http.StatusBadRequest},
-		{"wait-your-turn move by X", Request{gameID, X, 2}, http.StatusForbidden},
-		{"correct move by O", Request{gameID, O, 0}, http.StatusOK},
-		{"forbidden move by X", Request{gameID, X, 0}, http.StatusForbidden},
-		{"correct move by X", Request{gameID, X, 2}, http.StatusOK},
-		{"correct move by O", Request{gameID, O, 6}, http.StatusOK},
-		{"correct move by X", Request{gameID, X, 5}, http.StatusOK},
-		{"winning move by O", Request{gameID, O, 3}, http.StatusOK},
+		{"X does forbidden move", "1", "x_forbidden", "already occupied"},
+		{"X does not wait for turn", "2", "x_no_wait", "please wait"},
+		{"X won", "3", "x_won", "X won"},
+		{"O won", "4", "o_won", "O won"},
+		{"tie", "5", "tie", "tie"},
 	}
 
 	for _, tc := range cases {
 		clonedTc := tc
 		s.Run(tc.name, func() {
-			var err error
-			w := httptest.NewRecorder()
-			c, _ := gin.CreateTestContext(w)
-
-			requestBody, err := json.Marshal(clonedTc.request)
+			jsonFile, err := os.Open(fixturesDir + clonedTc.requestFile + ".json")
 			if err != nil {
-				s.Error(err)
+				s.FailNow(err.Error())
 			}
 
-			c.Request, err = http.NewRequest("POST", "/move", bytes.NewBuffer(requestBody))
+			byteValue, err := ioutil.ReadAll(jsonFile)
 			if err != nil {
-				s.Error(err)
+				s.FailNow(err.Error())
 			}
 
-			s.server.HandleMove(s.mockRepository)(c)
+			var content struct {
+				Requests []Request
+			}
+			if err := json.Unmarshal(byteValue, &content); err != nil {
+				s.FailNow(err.Error())
+			}
 
-			s.Equal(clonedTc.code, w.Code)
+			var responseBody string
+			for _, request := range content.Requests {
+				w := httptest.NewRecorder()
+				c, _ := gin.CreateTestContext(w)
+
+				request.GameID = clonedTc.gameID
+
+				requestJSON, err := json.Marshal(request)
+				if err != nil {
+					s.FailNow(err.Error())
+				}
+
+				c.Request, err = http.NewRequest("POST", "/move", bytes.NewBuffer(requestJSON))
+				if err != nil {
+					s.FailNow(err.Error())
+				}
+
+				s.server.HandleMove(s.mockRepository)(c)
+
+				responseBody = w.Body.String()
+			}
+
+			s.Contains(responseBody, clonedTc.textToCheck)
 		})
 	}
 }

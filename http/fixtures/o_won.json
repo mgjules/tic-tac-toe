@@ -1,0 +1,9 @@
+{
+    "requests": [
+        { "mark": 2, "position": 0 },
+        { "mark": 1, "position": 1 },
+        { "mark": 2, "position": 3 },
+        { "mark": 1, "position": 4 },
+        { "mark": 2, "position": 6 }
+    ]
+}

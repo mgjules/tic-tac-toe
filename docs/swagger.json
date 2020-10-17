@@ -1,0 +1,163 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Microservice for TicTacToe",
+        "title": "TicTacToe",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "Jules Michael",
+            "email": "julesmichaelgiovanni@gmail.com"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:3001",
+    "basePath": "/",
+    "paths": {
+        "/": {
+            "get": {
+                "description": "get a \"pong\" with current time",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Health checks the service",
+                "responses": {
+                    "200": {
+                        "description": "pong",
+                        "schema": {
+                            "$ref": "#/definitions/http.HealthCheckResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/move": {
+            "post": {
+                "description": "Moves a mark('x', 'o') on the tictactoe board",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Makes a move",
+                "parameters": [
+                    {
+                        "description": "represents a move request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.MoveRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "move successful / X won / O won / tie",
+                        "schema": {
+                            "$ref": "#/definitions/http.MoveResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "validation failed on request",
+                        "schema": {
+                            "$ref": "#/definitions/http.MoveResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "please wait your turn / forbidden move",
+                        "schema": {
+                            "$ref": "#/definitions/http.MoveResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "game.Game": {
+            "type": "object",
+            "properties": {
+                "board_cells": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        0,
+                        1,
+                        0,
+                        2,
+                        2,
+                        0,
+                        1,
+                        1,
+                        0
+                    ]
+                },
+                "id": {
+                    "type": "string",
+                    "example": "123123"
+                },
+                "last_move_by": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ],
+                    "example": 1
+                }
+            }
+        },
+        "http.HealthCheckResponse": {
+            "type": "object",
+            "properties": {
+                "pong": {
+                    "type": "string",
+                    "example": "2020-10-17T11:34:10.089762941+04:00"
+                }
+            }
+        },
+        "http.MoveRequest": {
+            "type": "object",
+            "required": [
+                "game_id"
+            ],
+            "properties": {
+                "game_id": {
+                    "type": "string",
+                    "example": "123123"
+                },
+                "mark": {
+                    "description": "mark 'X' = 1. mark 'O' = 2.",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ],
+                    "example": 1
+                },
+                "position": {
+                    "type": "integer",
+                    "maximum": 8,
+                    "minimum": 0,
+                    "example": 5
+                }
+            }
+        },
+        "http.MoveResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "string"
+                },
+                "state": {
+                    "$ref": "#/definitions/game.Game"
+                }
+            }
+        }
+    }
+}

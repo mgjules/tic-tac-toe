@@ -2,7 +2,7 @@ linters-settings:
   depguard:
     list-type: whitelist
     packages:
-      - github.com/JulesMike/ringier-test
+      - github.com/mgjules/tic-tac-toe
       - firebase.google.com/go
       - github.com/gin-contrib/cors
       - github.com/gin-contrib/zap
@@ -13,13 +13,15 @@ linters-settings:
       - github.com/stretchr/testify
       - go.uber.org/zap
       - google.golang.org/api
+      - github.com/swaggo/gin-swagger
+      - github.com/swaggo/files
   dupl:
     threshold: 100
   funlen:
     lines: 100
     statements: 50
   gci:
-    local-prefixes: github.com/JulesMike/ringier-test
+    local-prefixes: github.com/mgjules/tic-tac-toe
   goconst:
     min-len: 2
     min-occurrences: 2

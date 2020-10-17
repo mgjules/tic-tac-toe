@@ -14,6 +14,17 @@ import (
 
 const appName = "tictactoe"
 
+// @title TicTacToe
+// @version 1.0
+// @description Microservice for TicTacToe
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name Jules Michael
+// @contact.email julesmichaelgiovanni@gmail.com
+
+// @host localhost:3001
+// @BasePath /
+
 func main() {
 	if err := run(); err != nil {
 		fmt.Printf("[%s] %v", appName, err)
@@ -54,7 +65,7 @@ func run() error {
 	// Server
 	server := rhttp.NewServer(cfg.Prod)
 	server.Middlewares(logger, cfg.CorsAllowedOrigins)
-	server.Routes(firebaseRepository)
+	server.Routes(firebaseRepository, cfg.Host, cfg.Port)
 
 	logger.Info("Gin server started on ", zap.String("host", cfg.Host), zap.String("port", cfg.Port))
 
