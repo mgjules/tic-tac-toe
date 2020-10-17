@@ -2,15 +2,21 @@ APP_NAME = tictactoe
 
 .PHONY: build
 
-buildrun: lint build run
+buildrun: build run
+
+vet:
+	go vet ./...
 
 lint:
 	golangci-lint run
 
+test:
+	go test ./... -cover
+
 run:
 	./$(APP_NAME)
 
-build:
+build: vet lint test
 	CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w"
 
 default: build
