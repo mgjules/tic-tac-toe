@@ -2,12 +2,14 @@ package repository
 
 import (
 	"context"
+	"sync"
 
 	"github.com/mgjules/tic-tac-toe/game"
 )
 
 // Mock represents a Mock repository
 type Mock struct {
+	mu sync.Mutex
 	db map[string]*game.Game
 }
 
@@ -38,7 +40,9 @@ func (m *Mock) SaveGame(ctx context.Context, g game.Game) error {
 		return err
 	}
 
+	m.mu.Lock()
 	m.db[g.ID] = &g
+	m.mu.Unlock()
 
 	return nil
 }
