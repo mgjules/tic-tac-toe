@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -33,8 +34,12 @@ func main() {
 }
 
 func run() error {
+	// Flags
+	path := flag.String("path", ".env", "path of the config file")
+	flag.Parse()
+
 	// Config
-	cfg, err := config.Load()
+	cfg, err := config.Load(*path)
 	if err != nil {
 		return errors.Wrap(err, "can't load config")
 	}

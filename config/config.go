@@ -12,11 +12,11 @@ type Config struct {
 	FirebaseServiceAccountKeyPath string   `mapstructure:"firebase_service_account_key_path"`
 }
 
-// Load loads and creates the config object
-func Load() (*Config, error) {
+// Load loads and creates the config object using config path
+func Load(path string) (*Config, error) {
 	v := viper.New()
 	v.SetConfigType("env")
-	v.SetConfigName(".env")
+	v.SetConfigName(path)
 	v.AddConfigPath(".")
 
 	if err := v.ReadInConfig(); err != nil {

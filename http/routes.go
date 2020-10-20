@@ -1,8 +1,6 @@
 package http
 
 import (
-	"log"
-
 	"github.com/mgjules/tic-tac-toe/game"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -21,8 +19,6 @@ func (s *Server) Routes(gameRepository game.Repository, host, port string) {
 	// Swagger
 	url := ginSwagger.URL("http://" + host + ":" + port + "/swagger/doc.json")
 	s.Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
-
-	log.Println("http://" + host + ":" + port + "/swagger/doc.json")
 
 	// NotFound
 	s.Router.NoRoute(s.HandleNotFound())
