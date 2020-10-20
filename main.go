@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/mgjules/tic-tac-toe/config"
+	"github.com/mgjules/tic-tac-toe/docs"
 	rhttp "github.com/mgjules/tic-tac-toe/http"
 	"github.com/mgjules/tic-tac-toe/repository"
 	"github.com/pkg/errors"
@@ -43,6 +44,9 @@ func run() error {
 	if err != nil {
 		return errors.Wrap(err, "can't load config")
 	}
+
+	// Swagger
+	docs.SwaggerInfo.Host = cfg.Host + ":" + cfg.Port
 
 	// Logger
 	var logger *zap.Logger

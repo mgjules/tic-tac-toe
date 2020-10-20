@@ -32,7 +32,7 @@ TicTacToe is a small microservice that acts as the backend for a tic tac toe gam
 
 ## API Documentation
 
-The microservice exposes a [Swagger UI](https://swagger.io/tools/swagger-ui/) interface on `http://{host}:{port}/swagger/index.html`.
+The microservice exposes a [Swagger UI](https://swagger.io/tools/swagger-ui/) interface on `http://${HOST}:${PORT}/swagger/index.html`.
 
 ## Implementation Status
 - [x] Allow only one move per player, i.e. one after the other
