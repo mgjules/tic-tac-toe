@@ -40,8 +40,8 @@ func (s *ServerTestSuite) TestRoutes() {
 		path   string
 		code   int
 	}{
-		{"route exist", http.MethodGet, "/", http.StatusOK},
-		{"invalid method", http.MethodPost, "/", http.StatusNotFound},
+		{"index", http.MethodGet, "/", http.StatusOK},
+		{"handle move", http.MethodPost, "/move", http.StatusBadRequest},
 		{"route does not exist", http.MethodGet, "/does-not-exist", http.StatusNotFound},
 	}
 

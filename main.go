@@ -6,10 +6,11 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/mgjules/tic-tac-toe/build"
 	"github.com/mgjules/tic-tac-toe/config"
 	"github.com/mgjules/tic-tac-toe/docs"
+	"github.com/mgjules/tic-tac-toe/game/repository"
 	rhttp "github.com/mgjules/tic-tac-toe/http"
-	"github.com/mgjules/tic-tac-toe/repository"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
@@ -37,7 +38,16 @@ func main() {
 func run() error {
 	// Flags
 	path := flag.String("path", ".env", "path of the config file")
+	version := flag.Bool("v", false, "prints build information including version")
 	flag.Parse()
+
+	if *version {
+		fmt.Printf("Version: %s\n", build.Version)
+		fmt.Printf("Commit: %s\n", build.Commit)
+		fmt.Printf("Branch: %s\n", build.Branch)
+		fmt.Printf("Date: %s\n", build.Date)
+		return nil
+	}
 
 	// Config
 	cfg, err := config.Load(*path)
