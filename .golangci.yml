@@ -43,12 +43,16 @@ linters-settings:
   goimports:
     local-prefixes: github.com/golangci/golangci-lint
   golint:
-    min-confidence: 0
+    min-confidence: 0.8
   gomnd:
     settings:
       mnd:
         # don't include the "operation" and "assign"
-        checks: argument,case,condition,return
+        checks: 
+          - argument
+          - case
+          - condition
+          - return
   govet:
     check-shadowing: true
   lll:
@@ -74,6 +78,7 @@ linters:
     - dogsled
     - dupl
     - errcheck
+    - exhaustive
     - funlen
     - gochecknoinits
     - goconst
@@ -92,6 +97,8 @@ linters:
     - lll
     - misspell
     - nakedret
+    - noctx
+    - nolintlint
     - rowserrcheck
     - scopelint
     - staticcheck
@@ -118,6 +125,9 @@ linters:
   # - wsl
 
 issues:
+  exclude:
+    - "ST1000"
+  exclude-use-default: false
   # Excluding configuration per-path, per-linter, per-text and per-source
   exclude-rules:
     - path: _test\.go

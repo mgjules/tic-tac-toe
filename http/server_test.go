@@ -2,6 +2,7 @@ package http_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -49,7 +50,7 @@ func (s *ServerTestSuite) TestRoutes() {
 		clonedTc := tc
 		s.Run(tc.name, func() {
 			w := httptest.NewRecorder()
-			req, _ := http.NewRequest(clonedTc.method, clonedTc.path, nil)
+			req, _ := http.NewRequestWithContext(context.Background(), clonedTc.method, clonedTc.path, nil)
 			s.server.Router.ServeHTTP(w, req)
 
 			s.Equal(clonedTc.code, w.Code)
