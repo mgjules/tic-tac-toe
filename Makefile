@@ -27,3 +27,6 @@ run:
 
 build: vet lint test
 	CGO_ENABLED=0 GOOS=linux go build -tags=jsoniter -ldflags="$(LDFLAGS)" -o $(APP_NAME)
+
+dev:
+	CGO_ENABLED=0 GOOS=linux go build -tags=jsoniter -gcflags='all=-N -l' -o $(APP_NAME)
