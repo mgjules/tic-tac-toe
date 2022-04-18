@@ -1,5 +1,8 @@
 # TicTacToe
 
+[![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=for-the-badge)](https://godoc.org/github.com/mgjules/tic-tac-toe)
+[![License](https://img.shields.io/badge/Apache%202.0-green.svg?style=for-the-badge)](LICENSE)
+
 TicTacToe is a small microservice that acts as the backend for a tic tac toe game by using the Firebase realtime database.
 
 ## Contents
