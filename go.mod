@@ -16,5 +16,5 @@ require (
 	github.com/swaggo/gin-swagger v1.6.0
 	github.com/swaggo/swag v1.8.12
 	go.uber.org/zap v1.21.0
-	google.golang.org/api v0.116.0
+	google.golang.org/api v0.118.0
 )
